@@ -8,5 +8,5 @@
         Title="Switch Lab Part 2 - No C#"
         Height="350"
         Width="525">
-    <Canvas></Canvas>
+   <Grid></Grid>
 </Window>
