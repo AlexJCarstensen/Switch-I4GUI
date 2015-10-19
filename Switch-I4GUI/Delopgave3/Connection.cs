@@ -12,12 +12,13 @@ namespace Delopgave3
 {
     class Connection
     {
-
+        private Canvas _canvas;
         private bool _current = false;
         private readonly Polyline _pl;
 
         public Connection(Canvas canvas, params Point[] pts)
         {
+            this._canvas = canvas;
             _pl = new Polyline
             {
                 Stroke = Brushes.Black,
@@ -30,6 +31,14 @@ namespace Delopgave3
 
             _pl.Points = myPointCollection;
             canvas.Children.Add(_pl);
+        }
+
+        public void Reroute(params Point[] pts)
+        {
+            PointCollection myPointCollection = new PointCollection();
+            foreach (var p in pts)
+                myPointCollection.Add(p);
+            _pl.Points = myPointCollection;
         }
 
         public bool Current

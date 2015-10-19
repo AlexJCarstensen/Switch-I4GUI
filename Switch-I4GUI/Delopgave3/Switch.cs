@@ -23,12 +23,17 @@ namespace Delopgave3
         protected BitmapImage imSwUp;
         protected BitmapImage imSwDown;
 
+        private Canvas _canvas;
+        private bool dragging = false;
+        private Vector _startPos;
+
         public Point Con1 => location + con1offset;
         public Point Con2 => location + con2offset;
         public Point Con3 => location + con3offset;
         public bool Up => up;
 
         public event EventHandler evToggle;
+        public event EventHandler evSwitchMoved;
 
         public Switch(Canvas canvas, double xloc, double yloc)
         {
@@ -40,6 +45,8 @@ namespace Delopgave3
             up = true;
             imSwitch.Source = imSwUp;
             imSwitch.MouseDown += new MouseButtonEventHandler(imSwitch_MouseDown);
+            imSwitch.MouseMove += new MouseEventHandler(imSwitch_MouseMove);
+            imSwitch.MouseUp += new MouseButtonEventHandler(imSwitch_MouseUp);
 
             location.X = xloc;
             location.Y = yloc;
@@ -53,11 +60,36 @@ namespace Delopgave3
             con3offset = new Vector(49, 65);
         }
 
-        private void imSwitch_MouseDown(object sender, MouseButtonEventArgs e)
+        private void imSwitch_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Toggle();
+            dragging = false;
+            Mouse.Capture(null);
         }
 
+        private void imSwitch_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                location = location + (Vector)(e.GetPosition(imSwitch) - _startPos);
+                Canvas.SetLeft(imSwitch, location.X);
+                Canvas.SetTop(imSwitch, location.Y);
+                evSwitchMoved?.Invoke(this, new EventArgs());
+            }
+        }
+
+        private void imSwitch_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Toggle();
+            }
+            if (e.RightButton != MouseButtonState.Pressed) return;
+            dragging = true;
+            Mouse.Capture(imSwitch);
+            _startPos = (Vector)e.GetPosition(imSwitch);
+        }
+
+        
         private void Toggle()
         {
             up = !up;
